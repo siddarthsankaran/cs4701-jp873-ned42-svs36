@@ -10,13 +10,19 @@ def getTrainingAndValidationDataAsTorchTuples(data):
         validation_dataset.append((convert_to_input_vector(data["collector"][i]), convert_ground_truth_to_vector(data["collector"][i])))
     return training_dataset, validation_dataset
 
+def getTestingDataAsTorchVector(data):
+    testing_dataset = []
+    for i in range(900, 1000):
+        testing_dataset.append((convert_to_input_vector(data["collector"][i]), convert_ground_truth_to_vector(data["collector"][i])))
+    return testing_dataset
+
 def convert_to_input_vector(data):
     captionVector = convert_caption_to_vector(data)
     authorVector = convert_author_to_vector(data["authorMeta"])
     audioVector = convert_audio_to_vector(data["musicMeta"])
     timeOfDayVector = np.array([((data["createTime"] % 86400) // (14400))]) # Split day into 6 parts
 
-    vec = torch.from_numpy(np.concatenate([captionVector, authorVector, audioVector, timeOfDayVector]))
+    vec = 10000*torch.from_numpy(np.concatenate([captionVector, authorVector, audioVector, timeOfDayVector]))
     return vec.type(torch.FloatTensor)
     
 def convert_caption_to_vector(data):
@@ -35,6 +41,10 @@ def convert_audio_to_vector(audio):
     audioAuthor = get_number_of_words(audio["musicAuthor"])
     audioOriginality = 1 if audio["musicOriginal"] else 0
     return np.array([audioName, audioAuthor, audioOriginality])
+
+def convert_video_metadata_to_vector(data):
+    videoDuration = data["videoMeta"]["duration"]
+    return np.array([videoDuration])
 
 def convert_ground_truth_to_vector(data):
     vec = torch.from_numpy(np.array([data["diggCount"], data["playCount"], data["shareCount"], data["commentCount"]]))
