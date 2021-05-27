@@ -76,14 +76,16 @@ linear_model = lr()
 logistic_model = logr()
 
 file = open("trending.json")
-data = json.load(file)
+rawdata = json.load(file)
+data = rawdata['collector']
 file.close()
-print(data)
+
 
 # CAPTION AND HASHTAGS
 capsandhashs = vectorize_capandhash(data)
 captions = capsandhashs[:, [0]]
 hashtags = capsandhashs[:, [1]]
+vectorize_capandhash(data)
 
 # AUTHOR
 authors = vectorize_author(data)
